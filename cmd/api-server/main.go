@@ -23,7 +23,7 @@ func main() {
 func createRouters(redisClient *redis.Client) *gin.Engine {
 
 	router := gin.Default()
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	router = addServiceRegistryEndpoints(router, redisClient)
 	router = reverseProxy(router, redisClient)
 	return router

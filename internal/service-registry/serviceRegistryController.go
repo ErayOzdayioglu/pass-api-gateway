@@ -16,13 +16,22 @@ func GetServiceRegistry(client *redis.Client) gin.HandlerFunc {
 		val, err := client.Get(context, serviceName).Result()
 
 		if err != nil {
-			log.Fatalln(err.Error())
+			context.JSON(http.StatusNotFound, gin.H{
+				"message": "There is no service in registry : " + serviceName,
+			})
 			return
 		}
 
-		jsonData, err := json.Marshal(val)
+		var serviceRegistryInstance model.GetServiceRegistryResponse
 
-		context.JSON(http.StatusOK, &jsonData)
+		err = json.Unmarshal([]byte(val), &serviceRegistryInstance)
+
+		if err != nil {
+			return
+		}
+		serviceRegistryInstance.ServiceName = serviceName
+
+		context.JSON(http.StatusOK, &serviceRegistryInstance)
 	}
 }
 

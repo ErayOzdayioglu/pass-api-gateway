@@ -14,11 +14,8 @@ import (
 
 func CreateReverseProxy(redisClient *redis.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//targetURL, _ := url.Parse(target)
-		//log.Printf("Target Url is : %s\n", targetURL.String())
-		// Create the reverse proxy
+
 		serviceName := c.Param("name")
-		//path := c.Param("path")
 		val, err := redisClient.Get(c, serviceName).Result()
 
 		if err != nil {
@@ -36,12 +33,9 @@ func CreateReverseProxy(redisClient *redis.Client) gin.HandlerFunc {
 
 		urlString := serviceRegistryInstance.IpAddress + ":" + strconv.Itoa(serviceRegistryInstance.Port)
 		targetURL, _ := url.Parse(urlString)
+		log.Printf("Proxy at : %s", targetURL.String())
 		proxy := httputil.NewSingleHostReverseProxy(targetURL)
 
-		//c.Request.URL.Scheme = targetURL.Scheme
-		//c.Request.URL.Host = targetURL.Host
-		// c.Request.URL.Path = path
-		//c.Request.URL = targetURL
 		log.Printf("Forwarding request to %s\n", c.Request.URL.String())
 		// Let the reverse proxy do its job
 		proxy.ServeHTTP(c.Writer, c.Request)
