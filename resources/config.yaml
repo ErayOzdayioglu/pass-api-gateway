@@ -1,9 +1,0 @@
-userService:
-  name: "user"
-  url : "http://localhost:8081/api/user"
-productService:
-  name: "product"
-  url: "http://localhost:8082/api/product"
-paymentService:
-  name: "payment"
-  url: "http://localhost:8083/api/payment"
