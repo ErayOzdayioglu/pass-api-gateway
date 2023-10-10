@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/ErayOzdayioglu/api-gateway/internal/config/cache"
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
 )
 
-func GetServiceRegistry(client *redis.Client) gin.HandlerFunc {
+func GetServiceRegistry() gin.HandlerFunc {
 	return func(context *gin.Context) {
+		client := cache.Client
 		serviceName := context.Param("name")
 
 		val, err := client.Get(context, serviceName).Result()
@@ -35,8 +35,9 @@ func GetServiceRegistry(client *redis.Client) gin.HandlerFunc {
 	}
 }
 
-func PostServiceRegistry(client *redis.Client) gin.HandlerFunc {
+func PostServiceRegistry() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		client := cache.Client
 		body := cache.ServiceEntity{}
 
 		if err := c.BindJSON(&body); err != nil {

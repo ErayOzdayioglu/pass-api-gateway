@@ -5,25 +5,36 @@ services:
   # App Service
   app:
     # Configuration for building the docker image for the service
+    container_name: api-gw
     build:
-      context: . # Use an image built from the specified dockerfile in the current directory.
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000" # Forward the exposed port 8080 on the container to port 8080 on the host machine
-    restart: unless-stopped
+      - "8000:8000"
     depends_on:
-      - redis # This service depends on redis. Start that first.
-    environment: # Pass environment variables to the service
-      REDIS_URL: redis:6379
-    networks: # Networks to join (Services on the same network can communicate with each other using their name)
-      - backend
+      - redis
+      - postgres
 
   # Redis Service
   redis:
-    image: "redis:alpine" # Use a public Redis image to build the redis service
+    image: redis:alpine
+    container_name: redis
     restart: unless-stopped
-    networks:
-      - backend
+    ports:
+      - 6379:6379
 
-networks:
-  backend:
+  # Postgres Service
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass-word
+      - POSTGRES_DB=pass-db
+
+volumes:
+  postgres:

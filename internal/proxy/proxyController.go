@@ -2,9 +2,9 @@ package proxy
 
 import (
 	"encoding/json"
+	"github.com/ErayOzdayioglu/api-gateway/internal/config/cache"
 	"github.com/ErayOzdayioglu/api-gateway/internal/model"
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -12,9 +12,9 @@ import (
 	"strconv"
 )
 
-func CreateReverseProxy(redisClient *redis.Client) gin.HandlerFunc {
+func CreateReverseProxy() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		redisClient := cache.Client
 		serviceName := c.Param("name")
 		val, err := redisClient.Get(c, serviceName).Result()
 
