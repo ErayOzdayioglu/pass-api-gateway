@@ -2,7 +2,8 @@ package service_registry
 
 import (
 	"encoding/json"
-	"github.com/ErayOzdayioglu/api-gateway/internal/model"
+	"fmt"
+	"github.com/ErayOzdayioglu/api-gateway/internal/config/cache"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"log"
@@ -22,41 +23,37 @@ func GetServiceRegistry(client *redis.Client) gin.HandlerFunc {
 			return
 		}
 
-		var serviceRegistryInstance model.GetServiceRegistryResponse
+		var serviceEntity cache.ServiceEntity
 
-		err = json.Unmarshal([]byte(val), &serviceRegistryInstance)
+		err = json.Unmarshal([]byte(val), &serviceEntity)
 
 		if err != nil {
 			return
 		}
-		serviceRegistryInstance.ServiceName = serviceName
 
-		context.JSON(http.StatusOK, &serviceRegistryInstance)
+		context.JSON(http.StatusOK, &serviceEntity)
 	}
 }
 
 func PostServiceRegistry(client *redis.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		body := model.AddToServiceRegistryRequest{}
+		body := cache.ServiceEntity{}
 
 		if err := c.BindJSON(&body); err != nil {
-			log.Fatalln(err.Error())
+			log.Println(err.Error())
 		}
 
-		jsonData, err := json.Marshal(model.AddToServiceRegistryRequest{
-			IpAddress: body.IpAddress,
-			Port:      body.Port})
-
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
+		jsonData, err := json.Marshal(body)
 
 		err = client.Set(c, body.ServiceName, jsonData, 0).Err()
 
 		if err != nil {
-			log.Fatalln(err.Error())
+			fmt.Println(body)
+			log.Println(err.Error())
 		}
 
-		c.String(http.StatusCreated, "Created")
+		c.JSON(http.StatusCreated, gin.H{
+			"message": "Created",
+		})
 	}
 }

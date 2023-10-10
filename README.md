@@ -19,3 +19,10 @@ Pass is an open source API Gateway product in phase alpha
 - Logging
 - Analytics
 - Protocol Conversions (REST to SOAP)
+
+## Installation
+First, clone the project then run the following command:
+
+```
+docker-compose up -d
+```

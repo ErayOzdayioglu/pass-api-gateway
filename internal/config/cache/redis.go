@@ -6,14 +6,19 @@ import (
 
 func RedisClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "redis:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 	return client
 }
 
-type ServiceRegistryInstance struct {
-	IpAddress string `json:"ipAddress"`
-	Port      int    `json:"port"`
+type ServiceEntity struct {
+	ServiceName string            `json:"serviceName"`
+	IpAddresses []IpAddressEntity `json:"ipAddresses"`
+}
+
+type IpAddressEntity struct {
+	IpAddress   string `json:"addr"`
+	IsAvailable bool   `json:"isAvailable"`
 }
