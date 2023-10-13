@@ -1,7 +1,11 @@
 package model
 
-type AddToServiceRegistryRequest struct {
-	ServiceName string `json:"serviceName"`
-	IpAddress   string `json:"ipAddress"`
-	Port        int    `json:"port"`
+type ServiceEntityRequest struct {
+	ServiceName string            `json:"serviceName"`
+	IpAddresses []IpAddressEntity `json:"ipAddresses"`
+}
+
+type IpAddressEntity struct {
+	IpAddress   string `json:"addr"`
+	IsAvailable bool   `json:"isAvailable,omitempty"`
 }
