@@ -21,13 +21,3 @@ func ConnectRedisClient() *redis.Client {
 
 	return client
 }
-
-type ServiceEntity struct {
-	ServiceName string            `json:"serviceName"`
-	IpAddresses []IpAddressEntity `json:"ipAddresses"`
-}
-
-type IpAddressEntity struct {
-	IpAddress   string `json:"addr"`
-	IsAvailable bool   `json:"isAvailable"`
-}

@@ -3,17 +3,6 @@
 services:
 
   # App Service
-  app:
-    # Configuration for building the docker image for the service
-    container_name: api-gw
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    depends_on:
-      - redis
-      - couchbase
 
   # Redis Service
   redis:
@@ -23,24 +12,11 @@ services:
     ports:
       - 6379:6379
 
-  couchbase:
-    image: couchbase:community-7.2.2
-    container_name: couchbase
+  mongo:
+    image: 'mongo:latest'
+    container_name: 'mongo'
     ports:
-      - "8091-8094:8091-8094"
-      - "11207-11211:11207-11211"
-    environment:
-      COUCHBASE_SERVER_VERSION: 7.0.1
-      COUCHBASE_USERNAME: admin
-      COUCHBASE_PASSWORD: password
-      COUCHBASE_BUCKET: passgw
-      COUCHBASE_BUCKET_RAMSIZE: 256
-      COUCHBASE_ANALYTICS_MEMORY_QUOTA: 1024
-      COUCHBASE_FEATURES: query
-      COUCHBASE_INDEX_STORAGE_SETTING: memopt
-      COUCHBASE_SERVICES: data,index,query
+      - '27017:27017'
     volumes:
-      - couchbase-data:/opt/couchbase/var
+      - ./data/dev/mongo:/data/db
 
-volumes:
-  couchbase-data:
