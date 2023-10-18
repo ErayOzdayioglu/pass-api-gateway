@@ -12,6 +12,7 @@ import (
 type ServiceRepository interface {
 	Save(serviceRequest *AddServiceRequest) (*Service, error)
 	FindByName(name string) (*Service, error)
+	FindByPath(path string) (*Service, error)
 }
 
 type serviceRepositoryI struct {
@@ -39,6 +40,17 @@ func (r *serviceRepositoryI) FindByName(name string) (*Service, error) {
 	coll := database.GetServiceCollection(r.db)
 	var serviceEntity *Service
 	filter := bson.D{{"serviceName", name}}
+	err := coll.FindOne(context.Background(), filter).Decode(&serviceEntity)
+	if err != nil {
+		return nil, err
+	}
+	return serviceEntity, nil
+}
+
+func (r *serviceRepositoryI) FindByPath(path string) (*Service, error) {
+	coll := database.GetServiceCollection(r.db)
+	var serviceEntity *Service
+	filter := bson.D{{"path", path}}
 	err := coll.FindOne(context.Background(), filter).Decode(&serviceEntity)
 	if err != nil {
 		return nil, err

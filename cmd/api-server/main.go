@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ErayOzdayioglu/api-gateway/internal"
+	"github.com/ErayOzdayioglu/api-gateway/internal/config/cache"
 	"github.com/ErayOzdayioglu/api-gateway/internal/config/database"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,10 +10,10 @@ import (
 )
 
 func main() {
-	// redisClient := cache.ConnectRedisClient()
+	redisClient := cache.ConnectRedisClient()
 	db := database.ConnectToMongo()
 	router := gin.Default()
-	internal.ApplicationRouter(router, db)
+	internal.ApplicationRouter(router, db, redisClient)
 
 	server := &http.Server{
 		Addr:    ":8000",

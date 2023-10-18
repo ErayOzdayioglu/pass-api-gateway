@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"github.com/ErayOzdayioglu/api-gateway/internal/common"
+	"github.com/ErayOzdayioglu/api-gateway/internal/loadbalancer"
 	"github.com/ErayOzdayioglu/api-gateway/internal/service"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -13,20 +14,22 @@ import (
 
 type ReverseProxyController struct {
 	ServiceRepository service.ServiceRepository
+	LoadBalancer      loadbalancer.LoadBalancer
 }
 
 func (c *ReverseProxyController) CreateReverseProxy(context *gin.Context) {
 
-	serviceName := context.Param("name")
+	path := context.Param("name")
 
-	serviceEntity, err := c.ServiceRepository.FindByName(serviceName)
+	serviceEntity, err := c.ServiceRepository.FindByPath("/" + path)
 	if err != nil {
 		context.JSON(http.StatusNotFound, common.ErrorResponse(err.Error()))
 	}
 
-	// TODO load balancer
-	hostname := serviceEntity.Hosts[0].Url
-	port := serviceEntity.Hosts[0].Port
+	host, err := c.LoadBalancer.SelectTheRouteWithRoundRobin(serviceEntity)
+
+	hostname := host.Url
+	port := host.Port
 
 	urlString := hostname + ":" + strconv.Itoa(port)
 	targetURL, _ := url.Parse(urlString)
